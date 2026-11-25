@@ -1,0 +1,9 @@
+# build outputs
+*.asi
+*.a
+# written by the mod at run time
+*.log
+*.state.ini
+# release packaging
+dist/
+*.zip

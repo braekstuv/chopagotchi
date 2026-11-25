@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install MinGW-w64
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends g++-mingw-w64-x86-64 binutils-mingw-w64-x86-64
+
+      - name: Run tests
+        run: sh tests/run.sh
+
+      - name: Build Chopagotchi.asi
+        run: sh build.sh
+
+      - name: Package
+        run: |
+          mkdir -p dist/Chopagotchi
+          cp Chopagotchi.asi Chopagotchi.ini README.md dist/Chopagotchi/
+          (cd dist && zip -r Chopagotchi-${GITHUB_REF_NAME//\//-}.zip Chopagotchi)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Chopagotchi
+          path: |
+            Chopagotchi.asi
+            Chopagotchi.ini
+            README.md
+            dist/*.zip
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: Chopagotchi
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "Chopagotchi $GITHUB_REF_NAME" \
+            --generate-notes \
+            Chopagotchi.asi Chopagotchi.ini README.md dist/*.zip
