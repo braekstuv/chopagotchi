@@ -140,7 +140,8 @@ host:
 
 Each `tests/test_*.cpp` is built and run on its own. The reward cooldown rules
 live in `rules/Cooldowns.h` so they can be tested without the game.
-`tests/test_mod.cpp` compiles `Chopagotchi.cpp` itself against a fake
+`tests/test_mod.cpp` compiles `Chopagotchi.cpp` (which pulls in the parts in
+`mod/`, see the list at its top) itself against a fake
 `windows.h` (`tests/fake/`) and fake Script Hook V natives that play the game
 (Chop, animations, clock, HUD), so it checks the real happiness and training
 rules, finding Chop's data, saving, settings and the happiness bar animation.

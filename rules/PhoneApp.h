@@ -1,8 +1,8 @@
 // Chopagotchi - the phone app's menu and the text it shows.
 //
 // Pure logic with no game or Windows calls, so it can be tested on any host
-// (see tests/test_phone_app.cpp). Chopagotchi.cpp reads the keys, draws the
-// screen and carries out the actions this returns.
+// (see tests/test_phone_app.cpp). mod/Overlay.h and mod/InPhone.h read the
+// keys and draw the screen; mod/AppActions.h carries out the actions this returns.
 #pragma once
 #include <cstddef>
 #include <cstdio>
@@ -12,6 +12,7 @@
 namespace phoneapp {
 
 enum Page { Home, Overview, Timers, Collars, Settings };
+static const char* const kPageTitles[] = {"Chopagotchi", "Overview", "Cooldowns", "Collar", "Settings"};
 enum Key { KeyApp, KeyUp, KeyDown, KeySelect, KeyBack };
 
 enum ActionType {
@@ -35,6 +36,12 @@ enum HomeItem { ItemOverview, ItemTimers, ItemCollar, ItemWhistle, ItemSettings,
 static const char* const kHomeLabels[kHomeItems] = {"Overview", "Cooldowns", "Collar", "Whistle for Chop", "Settings"};
 enum SettingItem { SettingMod, SettingMessages, SettingGainPopup, kSettingItems };
 static const char* const kSettingLabels[kSettingItems] = {"Chopagotchi", "Messages", "Happiness popup"};
+
+// The rows of the Cooldowns page after the walk bonus, in the order of
+// phonescreens::Status::secondsLeft, and the trick level each needs.
+static const int kTimers = 5;
+static const char* const kTimerNames[kTimers] = {"Fetch", "Sit", "Paw", "Beg", "Petting"};
+static const int kTimerNeedLevel[kTimers] = {0, 1, 2, 3, 0};
 
 struct App {
     bool open = false;

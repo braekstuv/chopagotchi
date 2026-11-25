@@ -8,7 +8,7 @@
 //             in a row (play time, so sleeping the days away does not count)
 //   Collar 5  rare find:   Chop sometimes digs it up while you walk together
 // Pure logic with no game or Windows calls (tested in tests/test_collars.cpp).
-// Chopagotchi.cpp feeds it events and keeps the progress in the state file.
+// mod/Gameplay.h feeds it events; mod/Progress.h keeps the progress in the state file.
 #pragma once
 #include <cstdio>
 #include <cstdlib>

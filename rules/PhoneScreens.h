@@ -11,7 +11,8 @@
 
 namespace phonescreens {
 
-// Everything the pages show, gathered by Chopagotchi.cpp each frame.
+// Everything the pages show, gathered each frame (mod/AppActions.h). The F9
+// overlay draws from the same Status.
 struct Status {
     bool have = false;                 // Chop's data is loaded
     int mood = 0;                      // 0 unhappy, 1 content, 2 happy
@@ -22,11 +23,10 @@ struct Status {
     int collar = -1;                   // 0..4, -1 unknown
     bool collarLocked[phoneapp::kCollars] = {};   // not earned yet
     long long walkMinutesLeft = 0;     // in-game minutes
-    long long secondsLeft[5] = {0, 0, 0, 0, 0};  // fetch, sit, paw, beg, petting
+    long long secondsLeft[phoneapp::kTimers] = {};  // fetch, sit, paw, beg, petting
     bool on[phoneapp::kSettingItems] = {false, false, false};
 };
 
-static const char* const kTitles[] = {"Chopagotchi", "Overview", "Cooldowns", "Collar", "Settings"};
 static const char* const kMoods[] = {"Unhappy", "Content", "Happy"};
 
 // `scroll` is the highlighted row on the two pages that only show information.
@@ -34,7 +34,7 @@ inline void build(const phoneapp::App& app, const Status& st, int scroll, realph
 {
     using namespace phoneapp;
     s = realphone::Screen();
-    snprintf(s.header, sizeof(s.header), "%s", kTitles[app.page]);
+    snprintf(s.header, sizeof(s.header), "%s", kPageTitles[app.page]);
     s.nested = app.page != Home;
     s.canSelect = rows(app.page) > 0;
     char v[48], line[64];
@@ -70,12 +70,10 @@ inline void build(const phoneapp::App& app, const Status& st, int scroll, realph
         else snprintf(v, sizeof(v), "-");
         snprintf(line, sizeof(line), "Walk: %s", v);
         s.add(line);
-        static const char* const names[5] = {"Fetch", "Sit", "Paw", "Beg", "Petting"};
-        static const int needLevel[5] = {0, 1, 2, 3, 0};
-        for (int i = 0; i < 5; ++i) {
-            if (tr.level < needLevel[i]) snprintf(v, sizeof(v), "Not learned");
+        for (int i = 0; i < kTimers; ++i) {
+            if (tr.level < kTimerNeedLevel[i]) snprintf(v, sizeof(v), "Not learned");
             else formatSeconds(st.secondsLeft[i], v, sizeof(v));
-            snprintf(line, sizeof(line), "%s: %s", names[i], v);
+            snprintf(line, sizeof(line), "%s: %s", kTimerNames[i], v);
             s.add(line);
         }
         break;
