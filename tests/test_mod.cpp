@@ -1,4 +1,4 @@
-// Host-side tests for Chopagotchi.cpp. The mod's source is compiled in directly
+// Host-side tests for Chopagotchi.cpp and mod/. The mod's source is compiled in directly
 // (so its static functions and state are reachable) against a fake Win32
 // (tests/fake/windows.h) and the fake Script Hook V natives below, which play
 // the game: Chop, the player, animations, the clock and the HUD.
@@ -236,7 +236,7 @@ static void startWith(float happy, float xp = 0)
     g_happy = happy;
     g_haveHappy = true;
     g_xp = xp;
-    tick(0, fake::tickMs);
+    tick(0);
     game::feed.clear();
 }
 
@@ -580,10 +580,10 @@ TEST(popup_hidden_in_menus_and_when_switched_off)
     game::hudOff = true;
     drawGain(fake::tickMs);
     game::hudOff = false;
-    cfgBar = 0;
+    cfgGainPopup = 0;
     drawGain(fake::tickMs);
     EXPECT(game::drawn.empty());
-    cfgBar = 1;
+    cfgGainPopup = 1;
     drawGain(fake::tickMs);
     EXPECT(drawnPlus() != nullptr);
 }
@@ -714,7 +714,7 @@ TEST(fetch_shows_both_popups)
     game::anims.insert(std::to_string(game::kChop) + "|fetch_drop");
     fake::tickMs += 250;
     g_fakeWallTime += 1;
-    tick(0.25f, fake::tickMs);
+    tick(0.25f);
     fake::tickMs += 200;
     game::drawn.clear();
     drawGain(fake::tickMs);
@@ -731,11 +731,11 @@ TEST(popup_switch_hides_training_too)
     resetMod();
     startWith(40);
     addXp(2);
-    cfgBar = 0;
+    cfgGainPopup = 0;
     fake::tickMs += 200;
     drawGain(fake::tickMs);
     EXPECT(drawnTrain() == nullptr);
-    cfgBar = 1;
+    cfgGainPopup = 1;
 }
 
 TEST(popup_position_comes_from_ini)
@@ -757,7 +757,7 @@ TEST(popup_position_comes_from_ini)
 TEST(settings_defaults)
 {
     resetMod();
-    EXPECT(cfgEnabled == 1 && cfgKey == VK_F9 && cfgNotify == 1 && cfgBar == 1);
+    EXPECT(cfgEnabled == 1 && cfgKey == VK_F9 && cfgNotify == 1 && cfgGainPopup == 1);
     EXPECT_NEAR(gainWalkStart, 5, 1e-6);
     EXPECT_NEAR(gainFetch, 3, 1e-6);
     EXPECT_NEAR(gainPet, 5, 1e-6);
@@ -777,7 +777,7 @@ TEST(settings_are_read_and_clamped)
     EXPECT_NEAR(gainPet, 12, 1e-6);
     EXPECT_NEAR(gainFetch, 100, 1e-6);
     EXPECT_NEAR(gainTrick, 0, 1e-6);
-    EXPECT(cfgBar == 0);
+    EXPECT(cfgGainPopup == 0);
     EXPECT_NEAR(xpNeeded[1], 20, 1e-6);
     EXPECT(xpNeeded[2] >= xpNeeded[1] && xpNeeded[3] >= xpNeeded[2]);
 }
@@ -838,7 +838,7 @@ TEST(missing_state_means_take_happiness_from_game)
     loadState();
     EXPECT(!g_haveHappy);
     game::putBlock(kDefaultBlock, 47);
-    tick(0, fake::tickMs);
+    tick(0);
     EXPECT(g_haveHappy);
     EXPECT_NEAR(g_happy, 47, 1e-4);
 }
@@ -948,7 +948,7 @@ static void step(float seconds, float moveMetres = 0)
     fake::tickMs += (ULONGLONG)(seconds * 1000);
     g_fakeWallTime += (long long)seconds;
     game::playerPos[0] += moveMetres;
-    tick(seconds, fake::tickMs);
+    tick(seconds);
 }
 
 TEST(first_tick_announces_and_applies)
@@ -957,12 +957,12 @@ TEST(first_tick_announces_and_applies)
     game::putBlock(kDefaultBlock, 10);
     g_happy = 70;
     g_haveHappy = true;
-    tick(0, fake::tickMs);
+    tick(0);
     EXPECT(g_live);
     EXPECT(feedHas("Chop is happy (70/100)"));
     EXPECT_NEAR(game::blockHappiness(kDefaultBlock), 70, 1e-4);
     game::feed.clear();
-    tick(0, fake::tickMs);
+    tick(0);
     EXPECT(game::feed.empty()); // only once
 }
 
@@ -1055,7 +1055,7 @@ TEST(nothing_happens_without_chops_data)
     g_happy = 40;
     g_haveHappy = true;
     game::anims.insert(std::to_string(game::kPlayer) + "|petting_franklin");
-    tick(0.25f, fake::tickMs);
+    tick(0.25f);
     EXPECT(!g_live);
     EXPECT_NEAR(g_happy, 40, 1e-4);
 }
@@ -1125,7 +1125,7 @@ static void resetPhone()
     g_app = phoneapp::App();
     g_appNote[0] = 0;
     g_appNoteUntil = 0;
-    loadPhoneSettings();
+    loadSettings();
     game::controls.clear();
     game::phoneUp = false;
     game::inVehicle = false;
@@ -1217,7 +1217,7 @@ TEST(phone_app_overview_shows_progress)
     EXPECT(drawnHas("Beg at 120"));
     EXPECT(drawnHas("With you"));
     game::chopExists = false;
-    tick(0.25f, fake::tickMs);
+    tick(0.25f);
     game::drawn.clear();
     phoneFrame(fake::tickMs);
     EXPECT(drawnHas("At home"));
@@ -1279,7 +1279,7 @@ TEST(phone_app_settings_toggle_and_save)
     EXPECT(fake::getIni(kIni, "Settings", "Notifications") && std::string(fake::getIni(kIni, "Settings", "Notifications")) == "0");
     phoneKey(kDown);
     phoneKey(kSelect);  // happiness popup off
-    EXPECT(cfgBar == 0);
+    EXPECT(cfgGainPopup == 0);
     EXPECT(std::string(fake::getIni(kIni, "Hud", "GainPopup")) == "0");
     phoneKey(kDown);
     phoneKey(kSelect);  // mod off, and the app still works to switch it back on
@@ -1326,7 +1326,7 @@ TEST(phone_app_whistle)
     game::inVehicle = false;
 
     game::chopExists = false;
-    tick(0.25f, fake::tickMs);
+    tick(0.25f);
     whistle();
     EXPECT(game::tasks.empty());
     EXPECT(drawnHas("isn't with you"));
@@ -1350,7 +1350,7 @@ TEST(phone_app_hint_shows_over_real_phone)
     phoneFrame(fake::tickMs);
     EXPECT(drawnHas("Chopagotchi  [F9]"));
     fake::setIni(kIni, "Phone", "Hint", "0");
-    loadPhoneSettings();
+    loadSettings();
     game::drawn.clear();
     phoneFrame(fake::tickMs);
     EXPECT(game::drawn.empty());
@@ -1529,7 +1529,6 @@ void reset(bool icon = true)
     g_real = realphone::Phone();
     g_realApp = phoneapp::App();
     g_realScroll = 0;
-    g_realSettingsLoaded = false;
     g_phoneShrunk = false;
     g_app = phoneapp::App();
     g_appNote[0] = 0;
@@ -1538,7 +1537,7 @@ void reset(bool icon = true)
     game::controls.clear();
     game::phoneUp = false;
     game::playerModel = "player_one";
-    loadPhoneSettings();
+    loadSettings();
 }
 } // namespace realfake
 
@@ -1711,19 +1710,19 @@ TEST(real_phone_only_for_franklin_and_can_be_switched_off)
     EXPECT(g_real.onPhone());
 
     fake::setIni(kIni, "Phone", "InPhone", "0");
-    g_realSettingsLoaded = false;
+    loadSettings();
     phoneFrame(fake::tickMs);
     EXPECT(!g_real.onPhone());
     EXPECT(game::globals[realfake::rowAt(g_real.row(), 4)] == (uint32_t)-99);
     fake::setIni(kIni, "Phone", "InPhone", "1");
     fake::setIni(kIni, "Phone", "Icon", "40");
     fake::setIni(kIni, "Phone", "Cell", "0");
-    g_realSettingsLoaded = false;
+    loadSettings();
     game::movieCalls.clear();
     phoneFrame(fake::tickMs);
     EXPECT(realfake::movieHas("SET_DATA_SLOT(5,1,0,40,0,'Chopagotchi',255)"));
     fake::setIni(kIni, "Phone", "Icon", "999");  // no such icon: the default is used
-    loadRealPhoneSettings();
+    loadSettings();
     EXPECT(cfgPhoneIcon == 14);
 }
 

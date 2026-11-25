@@ -37,6 +37,8 @@
 #include <cstdio>
 #include <cstring>
 
+#include "Joaat.h"
+
 namespace realphone {
 
 struct Host {
@@ -64,21 +66,7 @@ struct Host {
     virtual void releaseScript(const char* script) = 0;
 };
 
-inline uint32_t joaat(const char* s)
-{
-    uint32_t h = 0;
-    for (; *s; ++s) {
-        char c = *s;
-        if (c >= 'A' && c <= 'Z') c += 32;
-        h += (uint8_t)c;
-        h += h << 10;
-        h ^= h >> 6;
-    }
-    h += h << 3;
-    h ^= h >> 11;
-    h += h << 15;
-    return h;
-}
+using ::joaat;
 
 // ---- the game's layout -------------------------------------------------------
 static const int kRowSize = 15;       // slots per app row
@@ -740,7 +728,7 @@ private:
             if (cell < 0) {
                 // A full home screen: the Checklist app gives up its cell.
                 int32_t c = getOr(h, L_.row(kChecklistRow, kOffCell), kHidden);
-                if (rowLaunches(h, L_, kChecklistRow, "appChecklist") && getOr(h, L_.row(kChecklistRow, kOffPage), 0) == 1 &&
+                if (rowLaunches(h, L_, kChecklistRow, kChecklistScript) && getOr(h, L_.row(kChecklistRow, kOffPage), 0) == 1 &&
                     c >= 0 && c < kCells) {
                     set(h, L_.row(kChecklistRow, kOffCell), kHidden);
                     cell = c;

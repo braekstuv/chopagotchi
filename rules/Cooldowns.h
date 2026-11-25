@@ -1,7 +1,7 @@
 // Chopagotchi - reward cooldown rules.
 //
 // Pure logic with no game or Windows calls, so it can be tested on any host
-// (see tests/). Chopagotchi.cpp supplies the clocks and the state file.
+// (see tests/). mod/Gameplay.h supplies the clocks, mod/Progress.h the state file.
 #pragma once
 #include <cstdio>
 #include <cstdlib>

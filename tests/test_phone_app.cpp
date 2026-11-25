@@ -206,6 +206,9 @@ static void testHudArea()
     CHECK(near(a.left, 0) && near(a.width, 1) && near(a.top, 0));
     a = hudArea(0.0f / 0.0f, 2.0f);
     CHECK(near(a.width, 1) && near(a.height, 1));
+    // Three 32:9 screens side by side (wider than 10:1) are a real setup, not a bad value.
+    a = hudArea(96.0f / 9.0f, 1.0f);
+    CHECK(near(a.width, 1.0f / 6.0f) && near(a.left, 0.5f - 1.0f / 12.0f));
 }
 
 static void testTimers()
