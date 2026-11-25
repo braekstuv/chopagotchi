@@ -7,8 +7,9 @@
 // practising tricks and petting him raise his happiness and teach him tricks,
 // and his happiness fades again if you leave him at home.
 //
-// The mod is built as one translation unit: this file includes the parts below
-// in order, so tests/test_mod.cpp can compile it whole against a fake game.
+// The mod is built as one translation unit, so tests/test_mod.cpp can compile
+// it whole against a fake game. Its parts, each of which includes the ones it
+// needs (listed here from the bottom layer up):
 //   mod/Natives.h     Script Hook V imports and the game natives used
 //   mod/Log.h         the game folder and Chopagotchi.log
 //   mod/Settings.h    Chopagotchi.ini

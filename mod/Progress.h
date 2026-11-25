@@ -182,10 +182,12 @@ static void collarsEarned(int unlocked)
 }
 
 // The collar Chop wears: the mod's choice, else the game's, else -1.
-static int currentCollar()
+// dataReady is ready(), for callers that have already asked.
+static int currentCollar(bool dataReady)
 {
     if (g_collar >= 0) return g_collar;
     int32_t c = -1;
-    if (ready() && readInt(g_block + kOffCollar, &c) && c >= 0 && c < collars::kCount) return c;
+    if (dataReady && readInt(g_block + kOffCollar, &c) && c >= 0 && c < collars::kCount) return c;
     return -1;
 }
+static int currentCollar() { return g_collar >= 0 ? g_collar : currentCollar(ready()); }

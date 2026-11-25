@@ -34,14 +34,15 @@ static void appNote(const char* text)
 static phonescreens::Status chopStatus()
 {
     phonescreens::Status st;
-    st.have = ready() && g_haveHappy;
+    bool dataReady = ready();  // asked once: it scans the script globals while Chop's data is not found
+    st.have = dataReady && g_haveHappy;
     st.happy = g_happy;
     st.mood = mood(st.happy);
     st.xp = g_xp;
     for (int i = 0; i < 4; ++i) st.needed[i] = xpNeeded[i];
     st.trickNames = kTrickNames;
     st.chop = chopWhere();
-    st.collar = currentCollar();
+    st.collar = currentCollar(dataReady);
     for (int i = 0; i < collars::kCount && i < phoneapp::kCollars; ++i)
         st.collarLocked[i] = !collars::isUnlocked(g_collarProgress, cfgCollars, i);
     st.walkMinutesLeft = phoneapp::walkMinutesLeft(g_cd.lastWalkGameMinute, gameMinutes(), walkCooldownGameMinutes());

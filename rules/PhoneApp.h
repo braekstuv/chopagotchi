@@ -4,6 +4,7 @@
 // (see tests/test_phone_app.cpp). mod/Overlay.h and mod/InPhone.h read the
 // keys and draw the screen; mod/AppActions.h carries out the actions this returns.
 #pragma once
+#include <cmath>
 #include <cstddef>
 #include <cstdio>
 
@@ -139,7 +140,8 @@ struct HudArea {
 inline HudArea hudArea(float aspect, float safeZone)
 {
     const float wide = 16.0f / 9.0f;
-    if (!(aspect > 0.5f && aspect < 10.0f)) aspect = wide;  // also catches NaN
+    // No upper limit: three 32:9 screens side by side are wider than 10:1.
+    if (!(aspect > 0.5f && std::isfinite(aspect))) aspect = wide;  // also catches NaN
     if (!(safeZone >= 0.5f && safeZone <= 1.0f)) safeZone = 1.0f;
     HudArea a;
     a.squeeze = aspect > wide ? wide / aspect : 1.0f;
