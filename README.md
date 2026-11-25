@@ -30,9 +30,6 @@ smoothly and "Chop Happiness +N" floats up beside it; training gains show
 "Chop Training +N" just above. Move them with `GainX`/`GainY` or hide them with
 `GainPopup=0` under `[Hud]` in `Chopagotchi.ini`.
 
-Keys (F9 by default): **F9** opens the Chopagotchi app, **Ctrl+F9**
-switches the mod on or off, **Shift+F9** changes his collar.
-
 ### Earning collars
 
 The first (green) collar is Chop's from the start; the other four are earned,
@@ -50,15 +47,20 @@ Shift+F9 only switches between collars he has. Every number is under
 Progress is kept in `Chopagotchi.state.ini`; a collar he already wore before
 this update stays his.
 
-## The Chopagotchi app
+Chop's happiness, training, collar and reward cooldowns are kept in `Chopagotchi.state.ini` in
+the game folder, not in the save game: on an account that once used iFruit the
+game keeps overwriting its own copy with the app's old numbers, so the mod
+holds the values and re-applies them. They are shared by all your saves.
 
-F9 opens a phone-style app where Franklin's phone sits. Move with the arrow
-keys (or the d-pad), Enter (A) to choose, Backspace (B) to go back or close.
-The same app is also on Franklin's real phone (next section). Where that is
-not possible, a small "Chopagotchi [F9]" tab appears above the real phone as a
-reminder of the key.
-The app follows the game's HUD area and safe-zone setting, so it sits by the
-phone on 16:9 and ultrawide screens alike; nudge it with `[Phone]` in the ini.
+Every number and the key can be changed in `Chopagotchi.ini`.
+
+## Chopagotchi on Franklin's phone
+
+Take out Franklin's phone in story mode and open its Checklist app: below
+"Open Missions" and "Progress" there is a third row, "Chopagotchi". Choose it
+and Chop's pages appear on the phone's own list screen, with the phone's
+own controls. Back steps up a page, and from the first page back to the
+Checklist menu. Notes such as "Chop comes running!" show above the minimap.
 
 - **Overview**: mood and happiness, training points, tricks he knows, progress
   to the next trick, and whether Chop is with you, at home or hurt.
@@ -69,23 +71,6 @@ phone on 16:9 and ultrawide screens alike; nudge it with `[Phone]` in the ini.
 - **Whistle for Chop**: calls him back when he has wandered off on a walk.
 - **Settings**: switch the mod, the messages and the happiness popup on or
   off. Changes are saved to `Chopagotchi.ini`.
-
-Set `App=0` under `[Phone]` to go back to the one-line status message on F9.
-
-Every number and the key can be changed in `Chopagotchi.ini`.
-
-Chop's happiness, training, collar and reward cooldowns are kept in `Chopagotchi.state.ini` in
-the game folder, not in the save game: on an account that once used iFruit the
-game keeps overwriting its own copy with the app's old numbers, so the mod
-holds the values and re-applies them. They are shared by all your saves.
-
-## On Franklin's phone
-
-Take out Franklin's phone in story mode and open its Checklist app: below
-"Open Missions" and "Progress" there is a third row, "Chopagotchi". Choose it
-and the pages above appear on the phone's own list screen, with the phone's
-own controls. Back steps up a page, and from the first page back to the
-Checklist menu. Notes such as "Chop comes running!" show above the minimap.
 
 It is the phone's list screen, so every row is one line of text (happiness is
 a number here, not a bar).
@@ -104,10 +89,25 @@ Settings, under `[Phone]` in the ini:
 The mod finds the phone's data by its contents each time, not by numbers tied
 to one game version, and checks it before writing anything. If it does not
 recognise the data, for example after a game update, the phone is left alone,
-`Chopagotchi.log` says why ("In-phone app: ..."), and F9 still opens the app.
+`Chopagotchi.log` says why ("In-phone app: ..."), and the overlay below still
+works.
 
 This part was written from the game's decompiled phone scripts (Enhanced
 1.0.1158.13) and still needs to be confirmed in the game.
+
+## Fallback: the Chopagotchi overlay (F9)
+
+When the real phone can't be used, F9 opens the same pages in a phone-style
+overlay where Franklin's phone sits. Move with the arrow keys (or the d-pad),
+Enter (A) to choose, Backspace (B) to go back or close. Where the in-phone app
+is not possible, a small "Chopagotchi [F9]" tab appears above the real phone as
+a reminder of the key. The overlay follows the game's HUD area and safe-zone
+setting, so it sits by the phone on 16:9 and ultrawide screens alike; nudge it
+with `[Phone]` in the ini.
+
+Other keys: **Ctrl+F9** switches the mod on or off, **Shift+F9** changes his
+collar. Set `App=0` under `[Phone]` to go back to the one-line status message
+on F9.
 
 ## Install (Steam on Linux / Proton)
 
